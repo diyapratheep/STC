@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silly Debate Battle!</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="float-item">🎭</div>
+        <div class="float-item">🎪</div>
+        <div class="float-item">🎨</div>
+        <div class="float-item">🎡</div>
+    </div>
+
+    <main>
+        <header>
+            <h1>Silly Debate Battle! 🎭</h1>
+            <p>Where logic meets laughter!</p>
+        </header>
+
+        <!-- Landing Page -->
+        <div id="landing-page" class="section active">
+            <button class="btn create-room">Create Debate Room</button>
+            <button class="btn join-room">Join Debate Room</button>
+        </div>
+
+        <!-- Team Name Input -->
+        <div id="team-name" class="section">
+            <div class="team-info">
+                <h2>Enter Your Team Name</h2>
+                <input type="text" id="team-name-input" placeholder="Enter your team name" maxlength="20">
+                <p class="error-message hidden">Please enter a team name!</p>
+                <button class="btn continue-btn">Continue</button>
+            </div>
+            <button class="btn back-btn">Back</button>
+        </div>
+
+        <!-- Room Creation -->
+        <div id="room-code" class="section">
+            <div class="room-info">
+                <h2>Your Room Code:</h2>
+                <div id="generated-code" class="code-display"></div>
+                <p>Share this code with your opponent!</p>
+                <div class="waiting-for-opponent">
+                    <p>Waiting for opponent to join...</p>
+                    <div class="loading-dots">
+                        <span>.</span><span>.</span><span>.</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn back-btn">Back</button>
+        </div>
+
+        <!-- Join Room -->
+        <div id="join-section" class="section">
+            <div class="join-form">
+                <input type="text" id="room-code-input" placeholder="Enter Room Code" maxlength="6">
+                <p class="error-message hidden">Invalid room code or room is full!</p>
+                <button class="btn join-btn">Join Battle!</button>
+            </div>
+            <button class="btn back-btn">Back</button>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="section">
+            <div class="welcome-content">
+                <h2 class="welcome-title">Welcome to the Room of Word Battle! 🎪</h2>
+                <div class="teams-display">
+                    <div class="team">
+                        <h3>Team 1:</h3>
+                        <p id="team1-name"></p>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team">
+                        <h3>Team 2:</h3>
+                        <p id="team2-name"></p>
+                    </div>
+                </div>
+                <div class="rules">
+                    <h3>Rules of Engagement:</h3>
+                    <ol>
+                        <li>Roll the die to get your debate topic</li>
+                        <li>You'll have 2 minutes to make your case</li>
+                        <li>Best of 10 rounds wins the battle!</li>
+                        <li>Be creative, be silly, but most importantly - have fun!</li>
+                    </ol>
+                </div>
+                <button class="btn proceed-btn">Proceed to Battle!</button>
+            </div>
+        </div>
+
+        <!-- Die Rolling Screen -->
+        <div id="die-screen" class="section">
+            <div class="die-container">
+                <div class="die" id="debate-die">🎲</div>
+                <button class="btn roll-die-btn">Roll for Topic!</button>
+            </div>
+            <div id="topic-reveal" class="hidden">
+                <h2>Your Topic:</h2>
+                <p id="rolled-topic"></p>
+                <div id="judge-reveal">
+                    <h3>Your Judge:</h3>
+                    <div id="judge-character"></div>
+                </div>
+                <button class="btn start-debate-btn">Start Debate!</button>
+            </div>
+        </div>
+
+        <!-- Debate Room -->
+        <div id="debate-room" class="section">
+            <div class="countdown-overlay hidden">
+                <div class="countdown-number">3</div>
+            </div>
+
+            <div class="round-info">
+                <h2>Round <span id="current-round">1</span>/10</h2>
+            </div>
+
+            <div class="topic-section">
+                <h2>Topic:</h2>
+                <p id="debate-topic"></p>
+            </div>
+
+            <div class="debate-area">
+                <div class="timer-container">
+                    <div id="timer">02:00</div>
+                    <span class="timer-icon">⏰</span>
+                </div>
+                <div id="waiting-message" class="hidden">
+                    Other team is still typing... Please wait! ✍️
+                </div>
+                <textarea id="debate-input" placeholder="Make your case..."></textarea>
+                <button class="btn submit-debate">Submit Argument</button>
+            </div>
+
+            <div id="results" class="hidden">
+                <div class="assessing-message">Assessing scores... 🤔</div>
+                <div class="scores">
+                    <div class="team-score">
+                        <h3>Your Score</h3>
+                        <div id="your-score"></div>
+                    </div>
+                </div>
+                <div id="commentary" class="commentary">
+                    <div class="mascot-container">
+                        <div id="judge-mascot" class="mascot"></div>
+                        <div class="speech-bubble cloud">
+                            <p id="judge-comment"></p>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn next-round-btn hidden">Next Round</button>
+            </div>
+        </div>
+
+        <!-- Winner Announcement -->
+        <div id="winner-screen" class="section">
+            <div class="winner-content">
+                <h2>🎉 Battle Complete! 🎉</h2>
+                <div class="winner-announcement">
+                    <h3>The Winner is:</h3>
+                    <p id="winning-team"></p>
+                </div>
+                <div id="final-commentary" class="commentary">
+                    <div class="mascot-container">
+                        <div id="final-judge-mascot" class="mascot"></div>
+                        <div class="speech-bubble cloud">
+                            <p id="final-comment"></p>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn new-game-btn">Start New Battle</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Created with 💖 for the Low Code Workshop</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
