@@ -73,19 +73,29 @@ function initializeFloatingElements() {
 
 // Show section with GSAP animation
 function showSection(sectionId) {
+    // Hide all sections except the battle area
     Object.values(sections).forEach(section => {
-        section.classList.remove('active');
+            section.classList.remove('active');
+            section.style.display = "none";
+        
     });
 
-    gsap.to(sections[sectionId], {
-        display: 'block',
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out",
-        onStart: () => sections[sectionId].classList.add('active')
-    });
+    const targetSection = sections[sectionId];
+    if (targetSection) {
+        targetSection.classList.add('active');
+        targetSection.style.display = "block";
+
+        gsap.to(targetSection, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out"
+        });
+    } else {
+        console.error(`Section "${sectionId}" not found!`);
+    }
 }
+
 
 
 
@@ -297,6 +307,10 @@ function showWinner() {
 // Start next round
 function startNextRound() {
     gameState.currentRound++;
+    if (gameState.currentRound > 10) {
+        showWinner();
+        return;
+    }
     gameState.inputSubmitted = false;
     
     // Reset UI
