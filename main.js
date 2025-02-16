@@ -123,19 +123,11 @@ function handleTeamName() {
     gameState.teamName = teamNameInput.value.trim();
     errorMessage.classList.add('hidden');
 
-    if (gameState.isHost) {
-        const roomCode = generateRoomCode();
-        gameState.roomCode = roomCode;
-        activeRooms.set(roomCode, {
-            host: gameState.teamName,
-            guest: null,
-            status: 'waiting'
-        });
-        document.getElementById('generated-code').textContent = roomCode;
-        showSection('roomCode');
-    } else {
-        showSection('join');
-    }
+    gameState.roomCode = "AUTO";  // No manual room code needed
+gameState.opponent = "Opponent"; // Assign generic opponent
+updateTeamDisplay();
+showSection('die');
+
 }
 
 // Join room
@@ -399,11 +391,10 @@ function resetGame() {
 }
 
 // Event Listeners
-document.querySelector('.create-room').addEventListener('click', createRoom);
-document.querySelector('.join-room').addEventListener('click', () => {
-    gameState.isHost = false;
+document.querySelector('.start-game').addEventListener('click', () => {
     showSection('teamName');
 });
+
 
 document.querySelector('.continue-btn').addEventListener('click', handleTeamName);
 
@@ -411,7 +402,7 @@ document.querySelectorAll('.back-btn').forEach(btn => {
     btn.addEventListener('click', () => showSection('landing'));
 });
 
-document.querySelector('.join-btn').addEventListener('click', joinRoom);
+
 
 document.querySelector('.proceed-btn').addEventListener('click', () => {
     showSection('die');
