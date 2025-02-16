@@ -31,20 +31,14 @@ const debateCharacters = [
 
 // Current game state
 let gameState = {
-    roomCode: null,
     teamName: null,
-    opponent: null,
     currentTopic: null,
     currentCharacter: null,
     timer: null,
     timeLeft: 120,
     currentRound: 1,
     inputSubmitted: false,
-    scores: {
-        team1: 0,
-        team2: 0
-    },
-    isHost: false
+    score: 0
 };
 
 // Room management
@@ -54,8 +48,6 @@ const activeRooms = new Map();
 const sections = {
     landing: document.getElementById('landing-page'),
     teamName: document.getElementById('team-name'),
-    roomCode: document.getElementById('room-code'),
-    join: document.getElementById('join-section'),
     welcome: document.getElementById('welcome-screen'),
     die: document.getElementById('die-screen'),
     debateRoom: document.getElementById('debate-room'),
@@ -95,20 +87,7 @@ function showSection(sectionId) {
     });
 }
 
-// Generate unique room code
-function generateRoomCode() {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    if (activeRooms.has(code)) {
-        return generateRoomCode();
-    }
-    return code;
-}
 
-// Create room
-function createRoom() {
-    showSection('teamName');
-    gameState.isHost = true;
-}
 
 // Handle team name submission
 function handleTeamName() {
@@ -122,49 +101,13 @@ function handleTeamName() {
 
     gameState.teamName = teamNameInput.value.trim();
     errorMessage.classList.add('hidden');
-
-    gameState.roomCode = "AUTO";  // No manual room code needed
-gameState.opponent = "Opponent"; // Assign generic opponent
-updateTeamDisplay();
-showSection('die');
-
-}
-
-// Join room
-// Join room
-function joinRoom() {
-    const codeInput = document.getElementById('room-code-input');
-    const errorMessage = document.querySelector('#join-section .error-message');
-    const code = codeInput.value.trim().toUpperCase();
-
-    if (!activeRooms.has(code)) {
-        errorMessage.textContent = "Invalid room code.";
-        errorMessage.classList.remove('hidden');
-        return;
-    }
-
-    const room = activeRooms.get(code);
-    if (room.guest) {
-        errorMessage.textContent = "Room is full.";
-        errorMessage.classList.remove('hidden');
-        return;
-    }
-
-    room.guest = gameState.teamName;
-    room.status = 'ready';
-    gameState.roomCode = code;
-    gameState.opponent = room.host;
-
-    updateTeamDisplay();
+    document.getElementById('team1-name').textContent = gameState.teamName;
     showSection('welcome');
 }
 
-// Update team display
-function updateTeamDisplay() {
-    const room = activeRooms.get(gameState.roomCode);
-    document.getElementById('team1-name').textContent = room.host;
-    document.getElementById('team2-name').textContent = room.guest || 'Waiting...';
-}
+
+
+
 
 // Roll die animation
 function rollDie() {
@@ -207,10 +150,12 @@ function rollForDebate() {
         </p>
     `;
 
-    // Set mascot
-    const mascotElement = document.getElementById('judge-mascot');
+    // Set mascot next to topic
+    const mascotElement = document.getElementById('topic-mascot');
     mascotElement.style.backgroundImage = `url('${gameState.currentCharacter.mascot}')`;
+    mascotElement.classList.remove('hidden');
 }
+
 
 // Start debate
 function startDebate() {
@@ -282,45 +227,41 @@ async function submitDebate() {
     // Simulate backend delay and score calculation
     setTimeout(() => {
         assessingMessage.classList.add('hidden');
-        const score = Math.floor(Math.random() * 100);
+        const pscore = Math.floor(Math.random() * 100);
         
         // Update scores
-        if (gameState.isHost) {
-            gameState.scores.team1 += score;
-        } else {
-            gameState.scores.team2 += score;
-        }
         
-        displayResults(score);
+            gameState.score += pscore;
+        
+        
+        
+        displayResults(pscore);
     }, 2000);
 }
 
 // Display results with typing animation
-function displayResults(score) {
+function displayResults(pscore) {
     const results = document.getElementById('results');
     const yourScore = document.getElementById('your-score');
     const commentary = document.getElementById('judge-comment');
     
-    yourScore.textContent = score;
+    yourScore.textContent = pscore;
     
-    const commentText = score >= 50 
+    const commentText = pscore >= 50 
         ? gameState.currentCharacter.positiveResponse
         : gameState.currentCharacter.negativeResponse;
-    
+    commentary.textContent = "";
     // Use Typed.js for commentary animation
     new Typed(commentary, {
         strings: [commentText],
         typeSpeed: 40,
         showCursor: false,
         onComplete: () => {
-            if (gameState.currentRound < 10) {
-                document.querySelector('.next-round-btn').classList.remove('hidden');
-            } else {
-                showWinner();
-            }
+            document.querySelector('.next-round-btn').classList.remove('hidden');
         }
     });
 }
+
 
 // Show winner
 function showWinner() {
