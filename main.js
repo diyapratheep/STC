@@ -139,18 +139,21 @@ function handleTeamName() {
 }
 
 // Join room
+// Join room
 function joinRoom() {
     const codeInput = document.getElementById('room-code-input');
     const errorMessage = document.querySelector('#join-section .error-message');
     const code = codeInput.value.trim().toUpperCase();
 
     if (!activeRooms.has(code)) {
+        errorMessage.textContent = "Invalid room code.";
         errorMessage.classList.remove('hidden');
         return;
     }
 
     const room = activeRooms.get(code);
     if (room.guest) {
+        errorMessage.textContent = "Room is full.";
         errorMessage.classList.remove('hidden');
         return;
     }
