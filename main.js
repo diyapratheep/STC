@@ -37,12 +37,12 @@ let gameState = {
     timer: null,
     timeLeft: 120,
     currentRound: 1,
+    currentTurn:1,
     inputSubmitted: false,
-    score: 0
+    score: 0,
 };
 
-// Room management
-const activeRooms = new Map();
+
 
 // DOM Elements
 const sections = {
@@ -112,6 +112,7 @@ function handleTeamName() {
     gameState.teamName = teamNameInput.value.trim();
     errorMessage.classList.add('hidden');
     document.getElementById('team1-name').textContent = gameState.teamName;
+    sendToGoogleSheets(gameState.teamName, "NAN","NAN", 0, "Team Registered"); //(gameState.teamName, gameState.currentTopic,gameState.currentCharacter.name, argument)
     showSection('welcome');
 }
 
@@ -226,6 +227,7 @@ async function submitDebate() {
     gameState.inputSubmitted = true;
     clearInterval(gameState.timer);
     document.getElementById('debate-input').disabled = true;
+    sendToGoogleSheets(gameState.teamName, gameState.currentTopic,gameState.currentCharacter.name, gameState.currentRound,argument); // heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     const results = document.getElementById('results');
     results.classList.remove('hidden');
@@ -324,12 +326,31 @@ function startNextRound() {
     startCountdown();
 }
 
+function sendToGoogleSheets(teamName,topic, character, round, argument) {
+    const scriptURL = SCRIPTS_API_URL; // Replace with your deployed URL
+
+    fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            teamName: teamName,
+            topic: topic,
+            character: character,
+            round: round,
+            argument: argument
+        })
+    }).then(response => console.log("Data sent to Google Sheets"))
+      .catch(error => console.error("Error:", error));
+}
+
+
 // Reset game
 function resetGame() {
     gameState = {
-        roomCode: null,
+
         teamName: null,
-        opponent: null,
+
         currentTopic: null,
         currentCharacter: null,
         timer: null,
@@ -340,7 +361,6 @@ function resetGame() {
             team1: 0,
             team2: 0
         },
-        isHost: false
     };
     showSection('landing');
 }

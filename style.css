@@ -84,8 +84,7 @@ header h1 {
     flex-direction: column;
     justify-content: center; /* Centers content vertically */
     align-items: center; /* Centers content horizontally */
-     /* Full viewport height */
-     /* Full width */
+
     text-align: center;
 }
 
