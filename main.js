@@ -51,7 +51,8 @@ const sections = {
     welcome: document.getElementById('welcome-screen'),
     die: document.getElementById('die-screen'),
     debateRoom: document.getElementById('debate-room'),
-    winner: document.getElementById('winner-screen')
+    winner: document.getElementById('winner-screen'),
+    teamname2: document.getElementById('team-name-2')
 };
 
 // Initialize floating elements with GSAP
@@ -100,21 +101,31 @@ function showSection(sectionId) {
 
 
 // Handle team name submission
-function handleTeamName() {
-    const teamNameInput = document.getElementById('team-name-input');
-    const errorMessage = document.querySelector('#team-name .error-message');
-    
+function handleTeamName(teamNumber) {
+    const teamNameInput = document.getElementById(teamNumber === 1 ? 'team-name-input' : 'team-name-input-2');
+    const errorMessage = teamNameInput.nextElementSibling;
+
     if (!teamNameInput.value.trim()) {
         errorMessage.classList.remove('hidden');
         return;
     }
-
     gameState.teamName = teamNameInput.value.trim();
+    if (teamNumber === 1) {
+        
+        document.getElementById('team-name1').textContent = gameState.teamName;
+        sendToGoogleSheets(gameState.teamName, "NAN", "NAN", 0, "Team 1 Registered");
+        console.log("Switching to team-name-2");
+        showSection('teamname2');
+  // Move to Team 2 Input
+    } else if (teamNumber === 2) {
+        
+        document.getElementById('team-name2').textContent = gameState.teamName;
+        sendToGoogleSheets(gameState.teamName, "NAN", "NAN", 0, "Team 2 Registered");
+        showSection('welcome');  // Move to Welcome Screen
+    }
+
     errorMessage.classList.add('hidden');
-    document.getElementById('team1-name').textContent = gameState.teamName;
-    sendToGoogleSheets(gameState.teamName, "NAN","NAN", 0, "Team Registered"); //(gameState.teamName, gameState.currentTopic,gameState.currentCharacter.name, argument)
-    showSection('welcome');
-}
+}   
 
 
 
@@ -327,7 +338,7 @@ function startNextRound() {
 }
 
 function sendToGoogleSheets(teamName,topic, character, round, argument) {
-    const scriptURL = SCRIPTS_API_URL; // Replace with your deployed URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // Replace with your deployed URL
 
     fetch(scriptURL, {
         method: "POST",
@@ -371,7 +382,13 @@ document.querySelector('.start-game').addEventListener('click', () => {
 });
 
 
-document.querySelector('.continue-btn').addEventListener('click', handleTeamName);
+document.querySelector('.continue-btn[data-team="1"]').addEventListener('click', () => {
+    handleTeamName(1);
+});
+
+document.querySelector('.continue-btn[data-team="2"]').addEventListener('click', () => {
+    handleTeamName(2);
+});
 
 document.querySelectorAll('.back-btn').forEach(btn => {
     btn.addEventListener('click', () => showSection('landing'));

@@ -32,15 +32,24 @@
         <!-- Team Name Input -->
         <div id="team-name" class="section">
             <div class="team-info ">
-                <h2>Enter Your Team Name</h2>
-                <input type="text" id="team-name-input" placeholder="Enter your team name" maxlength="20">
+                <h2>Enter 1st Team Name</h2>
+                <input type="text" id="team-name-input" placeholder="Enter Team 1 name" maxlength="20">
                 <p class="error-message hidden">Please enter a team name!</p>
-                <button class="btn continue-btn">Continue</button>
+                <button class="btn continue-btn" data-team="1">Continue</button>
            
             <button class="btn back-btn">Back</button>
         </div>
         </div>
 
+        <div id="team-name-2" class="section ">
+            <div class="team-info">
+                <h2>Enter Second Team Name</h2>
+                <input type="text" id="team-name-input-2" placeholder="Enter Team 2 Name" maxlength="20">
+                <p class="error-message hidden">Please enter a team name!</p>
+                <button class="btn continue-btn" data-team="2">Continue</button>
+                <button class="btn back-btn">Back</button>
+            </div>
+        </div>
 
         <!-- Welcome Screen -->
         <div id="welcome-screen" class="section">
@@ -48,8 +57,9 @@
                 <h2 class="welcome-title">Welcome to the Room of Word Battle! 🎪</h2>
                 <div class="teams-display">
                     <div class="team">
-                        <h3>Team:</h3>
-                        <p id="team1-name"></p>
+                        <h3>Competing Team:</h3>
+                        <p id="team-name1">[Team 1]</p> v/s <p id="team-name2">[Team 2]</p>
+
                     </div>
                 </div>
                 <div class="rules">
