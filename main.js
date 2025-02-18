@@ -355,7 +355,7 @@ function startNextRound() {
 }
 
 function sendToGoogleSheets(teamName,topic, character, round, argument) {
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // Replace with your deployed URL
+    const scriptURL = "url"; // Replace with your deployed URL
 
     fetch(scriptURL, {
         method: "POST",
