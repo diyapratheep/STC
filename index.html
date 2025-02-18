@@ -113,12 +113,9 @@
                 <div class="timer-container">
                     <div id="timer">02:00</div>
                     <span class="timer-icon">⏰</span>
-                    <button class="btn next-round-btn hidden">Next Round</button>
+                    <button class="btn team2-turn hidden">Team 2's Turn</button>
                 </div>
-                
-                <div id="waiting-message" class="hidden">
-                    Other team is still typing... Please wait! ✍️
-                </div>
+               
                 <textarea id="debate-input" placeholder="Make your case..."></textarea>
                 <button class="btn submit-debate">Submit Argument</button>
             </div>
@@ -143,14 +140,18 @@
             </div>
         </div>
 
-        <!-- Winner Announcement -->
+            <!-- Winner Announcement -->
         <div id="winner-screen" class="section">
             <div class="winner-content">
                 <h2>🎉 Battle Complete! 🎉</h2>
-                <div class="winner-announcement">
-                    <h3>The Winner is:</h3>
-                    <p id="winning-team"></p>
+
+                <!-- Final Message -->
+                <div class="final-message-container">
+                    <p id="final-message" class="final-message"> GOOD JOB 🎉
+                    </p>
                 </div>
+
+                <!-- Mascot and Commentary -->
                 <div id="final-commentary" class="commentary">
                     <div class="mascot-container">
                         <div id="final-judge-mascot" class="mascot"></div>
@@ -159,9 +160,12 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Start New Game Button -->
                 <button class="btn new-game-btn">Start New Battle</button>
             </div>
         </div>
+
     </main>
 
     <footer>

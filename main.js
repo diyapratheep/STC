@@ -38,7 +38,8 @@ let gameState = {
     timeLeft: 120,
     currentRound: 1,
     currentTurn:1,
-    inputSubmitted: false,
+    team1Submitted: false,
+    team2Submitted: false,
     score: 0,
 };
 
@@ -191,6 +192,7 @@ function startDebate() {
 function startCountdown() {
     const overlay = document.querySelector('.countdown-overlay');
     const countdownNumber = document.querySelector('.countdown-number');
+    timerDisplay = document.getElementById('timer');
     overlay.classList.remove('hidden');
     
     let count = 3;
@@ -208,14 +210,14 @@ function startCountdown() {
 // Timer functionality
 function startTimer() {
     const timerDisplay = document.getElementById('timer');
-    gameState.timeLeft = 120;
+    
     document.getElementById('debate-input').disabled = false;
+    if (gameState.timer) {  // Clear any existing timer before starting a new one
+        clearInterval(gameState.timer);
+    }
 
     gameState.timer = setInterval(() => {
-        if (gameState.inputSubmitted) {
-            clearInterval(gameState.timer);
-            return;
-        }
+        
 
         gameState.timeLeft--;
         const minutes = Math.floor(gameState.timeLeft / 60);
@@ -238,7 +240,9 @@ async function submitDebate() {
     gameState.inputSubmitted = true;
     clearInterval(gameState.timer);
     document.getElementById('debate-input').disabled = true;
-    sendToGoogleSheets(gameState.teamName, gameState.currentTopic,gameState.currentCharacter.name, gameState.currentRound,argument); // heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    const currentTeam = gameState.team1Submitted ? gameState.team2 : gameState.team1;
+
+    sendToGoogleSheets(currentTeam, gameState.currentTopic,gameState.currentCharacter.name, gameState.currentRound,argument); // heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     const results = document.getElementById('results');
     results.classList.remove('hidden');
@@ -253,9 +257,15 @@ async function submitDebate() {
         const pscore = Math.floor(Math.random() * 100);
         
         // Update scores
-        
-            gameState.score += pscore;
-        
+        if (!gameState.team1Submitted) {
+            gameState.team1Score = pscore;
+            gameState.team1Submitted = true;
+            document.querySelector('.submit-debate').classList.add('hidden');
+            document.querySelector('.team2-turn').classList.remove('hidden');
+        } else {
+            gameState.team2Score = pscore;
+            gameState.team2Submitted = true;
+        }
         
         
         displayResults(pscore);
@@ -280,57 +290,64 @@ function displayResults(pscore) {
         typeSpeed: 40,
         showCursor: false,
         onComplete: () => {
+            if (gameState.team1Submitted && gameState.team2Submitted) {
             document.querySelector('.next-round-btn').classList.remove('hidden');
-        }
+        }}
     });
 }
 
 
-// Show winner
-function showWinner() {
-    const winningTeam = gameState.scores.team1 > gameState.scores.team2 
-        ? activeRooms.get(gameState.roomCode).host 
-        : activeRooms.get(gameState.roomCode).guest;
-    
-    document.getElementById('winning-team').textContent = winningTeam;
-    
-    // Set final mascot
-    const finalMascot = document.getElementById('final-judge -mascot');
+
+function finish() {
+    // Hide debate input and buttons
+    document.querySelector(".debate-area").classList.add("hidden");
+    document.querySelector(".next-round-btn").classList.add("hidden");
+    document.querySelector(".team2-turn").classList.add("hidden");
+
+    // Show final winner section
+    showSection("winner");
+
+    // Display final message
+    document.getElementById("final-message").textContent = 
+        "Debate over! Both teams played well. Check your mail for the winner! 🎉";
+
+    // Set mascot image
+    const finalMascot = document.getElementById("final-judge-mascot");
     finalMascot.style.backgroundImage = `url('${gameState.currentCharacter.mascot}')`;
 
-    // Display final commentary
-    const finalComment = document.getElementById('final-comment');
-    new Typed(finalComment, {
-        strings: [gameState.currentCharacter.winnerResponse],
-        typeSpeed: 40,
+    // Animate final commentary
+    new Typed(document.getElementById("final-comment"), {
+        strings: ["Debate over! Both teams played well. Check your mail for the winner! 🎉"],
+        typeSpeed: 30,
         showCursor: false,
-        onComplete: () => {
+        preStringTyped: () => {
             // Trigger confetti celebration
             confetti({
-                particleCount: 100,
-                spread: 70,
+                particleCount: 150,
+                spread: 80,
                 origin: { y: 0.6 }
             });
         }
     });
-
-    showSection('winner');
 }
 
 // Start next round
 function startNextRound() {
     gameState.currentRound++;
-    if (gameState.currentRound > 10) {
-        showWinner();
+    if (gameState.currentRound > 1) {
+        finish();
         return;
     }
-    gameState.inputSubmitted = false;
+    gameState.team1Submitted = false;
+    gameState.team2Submitted = false;
     
     // Reset UI
     document.getElementById('debate-input').value = '';
     document.getElementById('debate-input').disabled = false;
     document.getElementById('results').classList.add('hidden');
     document.querySelector('.next-round-btn').classList.add('hidden');
+    document.querySelector('.team2-turn').classList.add('hidden');
+    document.querySelector('.submit-debate').classList.remove('hidden');
     document.getElementById('current-round').textContent = gameState.currentRound;
     
     // Start new countdown and timer
@@ -406,5 +423,13 @@ document.querySelector('.submit-debate').addEventListener('click', submitDebate)
 document.querySelector('.next-round-btn').addEventListener('click', startNextRound);
 document.querySelector('.new-game-btn').addEventListener('click', resetGame);
 
-// Initialize
+document.querySelector(".team2-turn").addEventListener("click", () => {
+    document.querySelector(".team2-turn").classList.add("hidden");
+    document.querySelector(".submit-debate").classList.remove("hidden");
+    document.getElementById("debate-input").value = "";
+    document.getElementById("debate-input").disabled = false;
+    gameState.currentTurn = 2;
+    
+    startCountdown();});
+
 initializeFloatingElements();
