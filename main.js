@@ -10,24 +10,64 @@ const debateTopics = [
 
 const debateCharacters = [
     {
-        name: "Desi Aunty",
+        name: "Desi Aunty, Padma",
         avatar: "👩",
         mascot: "https://api.dicebear.com/7.x/personas/svg?seed=desi-aunty&backgroundColor=b6e3f4",
         style: "gossip-loving, dramatic",
-        positiveResponse: "Hay Ram! Such brilliant points beta! Your parents must be so proud! 🎉",
-        negativeResponse: "Chi chi chi... What is this nonsense? In our times we did much better! 😤",
-        winnerResponse: "Wah wah! Such talent! Time to distribute sweets to the whole neighborhood! 🎊"
+        positiveResponse: "Beta, you argue like a lawyer! Very sharp—just don’t forget to eat, haan?",
+        negativeResponse: "This argument is like my neighbor’s son—loud, useless, and full of bad decisions.😤",
+        
     },
     {
-        name: "Surfer Dude",
+        name: "Surfer Dude, Kai",
         avatar: "🏄‍♂️",
         mascot: "https://api.dicebear.com/7.x/personas/svg?seed=surfer-dude&backgroundColor=ffd5dc",
         style: "laid-back, chill",
-        positiveResponse: "Totally radical argument, bro! Catching those debate waves like a pro! 🌊",
-        negativeResponse: "Bummer dude... That argument wiped out harder than a rookie on a tsunami! 🏊‍♂️",
-        winnerResponse: "Cowabunga! You totally shredded this debate competition, dude! 🏆"
+        positiveResponse: "Whoa, dude, that argument was smooth—like catching the perfect wave at sunrise!🌅",
+        negativeResponse: "That was like paddling out, missing every wave, and then getting smacked in the face by your own board 🏄‍♂️",
+    },
+    {
+        name: "Beanie Hipster, Finnegan (Fin)",
+        avatar: "🧒🧢",
+        mascot: "https://api.dicebear.com/9.x/open-peeps/svg?seed=Easton",
+        style: "sarcastic, artsy, underground",
+        positiveResponse: "You know, there’s a raw authenticity to your argument—very underground, very real.😉",
+        negativeResponse: "Wow, this take is so uninspired, it should come with a Starbucks pumpkin spice latte.😒",
+    },
+    {
+        name: "Holocaust Survivor, Samuela",
+        avatar: "😷👴",
+        mascot: "https://api.dicebear.com/7.x/personas/svg?seed=wise-samuel&backgroundColor=f4d150",
+        style: "wise, solemn, reflective",
+        positiveResponse: "You have conviction. And conviction is the only thing that ever truly matters.🫂",
+        negativeResponse: "I have heard weak arguments before. They often ended in disaster.🥸",
+    },
+    {
+        name: "Socially Awkward Bibliophile, Beatrice",
+        avatar: "👧📖",
+        mascot: "https://api.dicebear.com/9.x/miniavs/svg?seed=Ryan",
+        style: "bookish, nervous, intellectual",
+        positiveResponse: "Oh! This reminds me of a passage from *Middlemarch*! Very insightful! I—I need to reorganize my bookshelf just to process this.😃",
+        negativeResponse: "This argument is so flawed, I could fill an entire annotated bibliography disproving it. 🫥😶‍🌫️",
+    },
+    {
+        name: "Antarctic Latino, Alejandro (Alex)",
+        avatar: "🐻☃️🧔‍♂️",
+        mascot: "https://api.dicebear.com/7.x/personas/svg?seed=antarctic-alejandro&backgroundColor=6a994e",
+        style: "resilient, adventurous, resourceful",
+        positiveResponse: "Solid, amigo!👏 That argument stands firm—like a research base in the middle of a storm!⚡ It could survive a full Antarctic winter!",
+        negativeResponse: "This logic would collapse faster than a tent in a whiteout blizzard.🤌🏕️ ",
+    },
+    {
+        name: "Brooding CEO, Mr. Sterling",
+        avatar: "👨‍💼👔",
+        mascot: "https://api.dicebear.com/9.x/personas/svg?seed=Brooklynn",
+        style: "cold, calculating, corporate",
+        positiveResponse: "That’s a well-structured argument. High potential for growth. It’s scalable. It’s disruptive. It *wins*.👨‍💼",
+        negativeResponse: "This argument hemorrhages logic the way bad businesses burn money.🤨",
     }
 ];
+
 
 // Current game state
 let gameState = {
@@ -110,23 +150,26 @@ function handleTeamName(teamNumber) {
         errorMessage.classList.remove('hidden');
         return;
     }
-    gameState.teamName = teamNameInput.value.trim();
-    if (teamNumber === 1) {
-        
-        document.getElementById('team-name1').textContent = gameState.teamName;
-        sendToGoogleSheets(gameState.teamName, "NAN", "NAN", 0, "Team 1 Registered");
-        console.log("Switching to team-name-2");
-        showSection('teamname2');
-  // Move to Team 2 Input
-    } else if (teamNumber === 2) {
-        
-        document.getElementById('team-name2').textContent = gameState.teamName;
-        sendToGoogleSheets(gameState.teamName, "NAN", "NAN", 0, "Team 2 Registered");
-        showSection('welcome');  // Move to Welcome Screen
-    }
 
     errorMessage.classList.add('hidden');
-}   
+    const teamName = teamNameInput.value.trim();
+
+    if (teamNumber === 1) {
+        gameState.team1 = teamName;  // Store Team 1
+        document.getElementById('team-name1').textContent = gameState.team1;
+        sendToGoogleSheets(gameState.team1, "NAN", "NAN", 0, "Team 1 Registered");
+        console.log("✅ Team 1 Registered:", gameState.team1);
+        showSection('teamname2'); // Move to Team 2 Input
+
+    } else if (teamNumber === 2) {
+        gameState.team2 = teamName;  // Store Team 2
+        document.getElementById('team-name2').textContent = gameState.team2;
+        sendToGoogleSheets(gameState.team2, "NAN", "NAN", 0, "Team 2 Registered");
+        console.log("✅ Team 2 Registered:", gameState.team2);
+        showSection('welcome'); // Move to Welcome Screen
+    }
+}
+ 
 
 
 
@@ -233,68 +276,72 @@ function startTimer() {
 }
 
 // Submit debate argument
+// Submit debate argument
 async function submitDebate() {
     const argument = document.getElementById('debate-input').value;
     if (!argument.trim()) return;
 
-    gameState.inputSubmitted = true;
     clearInterval(gameState.timer);
     document.getElementById('debate-input').disabled = true;
+    if (!gameState.team1 || !gameState.team2) {
+        console.error("❌ ERROR: Team names are not set! Cannot submit debate.");
+        return;
+    }
     const currentTeam = gameState.team1Submitted ? gameState.team2 : gameState.team1;
-
-    sendToGoogleSheets(currentTeam, gameState.currentTopic,gameState.currentCharacter.name, gameState.currentRound,argument); // heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    if (!currentTeam) {
+        console.error("❌ ERROR: currentTeam is undefined before sending to Google Sheets!");
+        return;
+    }
+    console.log("✅ Submitting for team:", currentTeam);
+    // Send data to Google Sheets
+    sendToGoogleSheets(currentTeam, gameState.currentTopic, gameState.currentCharacter.name, gameState.currentRound, argument);
 
     const results = document.getElementById('results');
     results.classList.remove('hidden');
 
-    // Show assessing message
+    // Show assessing message until score is retrieved
     const assessingMessage = document.querySelector('.assessing-message');
     assessingMessage.classList.remove('hidden');
+    document.getElementById('your-score').textContent = "Assessing score...";
+    console.log("Passing expectedTeam:", currentTeam);
 
-    // Simulate backend delay and score calculation
-    setTimeout(() => {
-        assessingMessage.classList.add('hidden');
-        const pscore = Math.floor(Math.random() * 100);
-        
-        // Update scores
-        if (!gameState.team1Submitted) {
-            gameState.team1Score = pscore;
-            gameState.team1Submitted = true;
-            document.querySelector('.submit-debate').classList.add('hidden');
-            document.querySelector('.team2-turn').classList.remove('hidden');
-        } else {
-            gameState.team2Score = pscore;
-            gameState.team2Submitted = true;
-        }
-        
-        
-        displayResults(pscore);
-    }, 2000);
+    // **Retrieve actual score from Google Sheets**
+    setTimeout(() => retrieveDataFromGoogleSheets(currentTeam), 1000);
 }
 
-// Display results with typing animation
-function displayResults(pscore) {
-    const results = document.getElementById('results');
+
+
+function displayResults(teamName, score) {
     const yourScore = document.getElementById('your-score');
     const commentary = document.getElementById('judge-comment');
-    
-    yourScore.textContent = pscore;
-    
-    const commentText = pscore >= 50 
+
+    yourScore.textContent = `${teamName} has scored ${score} points`;
+
+    const commentText = score >= 50 
         ? gameState.currentCharacter.positiveResponse
         : gameState.currentCharacter.negativeResponse;
+
     commentary.textContent = "";
-    // Use Typed.js for commentary animation
+
+    // Use Typed.js for animated commentary
     new Typed(commentary, {
         strings: [commentText],
         typeSpeed: 40,
         showCursor: false,
         onComplete: () => {
-            if (gameState.team1Submitted && gameState.team2Submitted) {
-            document.querySelector('.next-round-btn').classList.remove('hidden');
-        }}
+            if (!gameState.team1Submitted) {
+                gameState.team1Submitted = true;
+                document.querySelector('.submit-debate').classList.add('hidden');
+                document.querySelector('.team2-turn').classList.remove('hidden'); // Show "Team 2's Turn"
+            } else {
+                gameState.team2Submitted = true;
+                document.querySelector('.next-round-btn').classList.remove('hidden'); // Show "Next Round"
+            }
+        }
     });
 }
+
+
 
 
 
@@ -355,7 +402,7 @@ function startNextRound() {
 }
 
 function sendToGoogleSheets(teamName,topic, character, round, argument) {
-    const scriptURL = "url"; // Replace with your deployed URL
+    const scriptURL = ""; // Replace with your Apps Script Web App URL
 
     fetch(scriptURL, {
         method: "POST",
@@ -372,23 +419,63 @@ function sendToGoogleSheets(teamName,topic, character, round, argument) {
       .catch(error => console.error("Error:", error));
 }
 
+function retrieveDataFromGoogleSheets(expectedTeam) {
+    const scriptURL = ""; // Replace with your Apps Script Web App URL
+
+    let attempts = 0;
+    const maxAttempts = 15;
+    
+    function fetchData() {
+        console.log("Checking for new data...");
+        console.log("Expected Team:", expectedTeam); // Ensure expectedTeam is being passed correctly
+
+        fetch(scriptURL)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Received Data:", data);
+                console.log("Received Team:", data.teamName);
+                data.teamName = String(data.teamName).trim();
+                expectedTeam = String(expectedTeam).trim(); 
+                if (!expectedTeam) {
+                    console.warn("⚠️ Warning: expectedTeam is undefined or null.");
+                    return;
+                }
+
+                // Check if the latest data belongs to the expected team
+                if (data.teamName === expectedTeam) {
+                    console.log("✅ Match Found! Updating score...");
+                    document.querySelector('.assessing-message').classList.add('hidden'); // Hide assessing message
+                    displayResults(data.teamName, data.score);
+                } else if (attempts < maxAttempts) {
+                    console.log("🔄 No match yet, retrying...");
+                    attempts++;
+                    setTimeout(fetchData, 2000); // Retry after 2 seconds
+                } else {
+                    console.warn("⏳ Timeout: No new data received within time limit.");
+                }
+            })
+            .catch(error => console.error("❌ Error fetching data:", error));
+    }
+
+    fetchData();  
+}
+
+
+
 
 // Reset game
 function resetGame() {
     gameState = {
-
         teamName: null,
-
         currentTopic: null,
         currentCharacter: null,
         timer: null,
         timeLeft: 120,
         currentRound: 1,
-        inputSubmitted: false,
-        scores: {
-            team1: 0,
-            team2: 0
-        },
+        currentTurn:1,
+        team1Submitted: false,
+        team2Submitted: false,
+        score: 0,
     };
     showSection('landing');
 }
