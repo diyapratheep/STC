@@ -93,7 +93,9 @@ const sections = {
     die: document.getElementById('die-screen'),
     debateRoom: document.getElementById('debate-room'),
     winner: document.getElementById('winner-screen'),
-    teamname2: document.getElementById('team-name-2')
+    teamname2: document.getElementById('team-name-2'),
+    teamEmail1: document.getElementById('team-email-1'),
+    teamEmail2: document.getElementById('team-email-2')
 };
 
 // Initialize floating elements with GSAP
@@ -142,6 +144,33 @@ function showSection(sectionId) {
 
 
 // Handle team name submission
+// function handleTeamName(teamNumber) {
+//     const teamNameInput = document.getElementById(teamNumber === 1 ? 'team-name-input' : 'team-name-input-2');
+//     const errorMessage = teamNameInput.nextElementSibling;
+
+//     if (!teamNameInput.value.trim()) {
+//         errorMessage.classList.remove('hidden');
+//         return;
+//     }
+
+//     errorMessage.classList.add('hidden');
+//     const teamName = teamNameInput.value.trim();
+
+//     if (teamNumber === 1) {
+//         gameState.team1 = teamName;  // Store Team 1
+//         document.getElementById('team-name1').textContent = gameState.team1;
+//         sendToGoogleSheets(gameState.team1, "NAN", "NAN", 0, "Team 1 Registered");
+//         console.log("✅ Team 1 Registered:", gameState.team1);
+//         showSection('teamname2'); // Move to Team 2 Input
+
+//     } else if (teamNumber === 2) {
+//         gameState.team2 = teamName;  // Store Team 2
+//         document.getElementById('team-name2').textContent = gameState.team2;
+//         sendToGoogleSheets(gameState.team2, "NAN", "NAN", 0, "Team 2 Registered");
+//         console.log("✅ Team 2 Registered:", gameState.team2);
+//         showSection('welcome'); // Move to Welcome Screen
+//     }
+// }
 function handleTeamName(teamNumber) {
     const teamNameInput = document.getElementById(teamNumber === 1 ? 'team-name-input' : 'team-name-input-2');
     const errorMessage = teamNameInput.nextElementSibling;
@@ -157,19 +186,47 @@ function handleTeamName(teamNumber) {
     if (teamNumber === 1) {
         gameState.team1 = teamName;  // Store Team 1
         document.getElementById('team-name1').textContent = gameState.team1;
-        sendToGoogleSheets(gameState.team1, "NAN", "NAN", 0, "Team 1 Registered");
         console.log("✅ Team 1 Registered:", gameState.team1);
-        showSection('teamname2'); // Move to Team 2 Input
+        showSection('teamEmail1'); // Move to Team 1 Email Input
 
     } else if (teamNumber === 2) {
         gameState.team2 = teamName;  // Store Team 2
         document.getElementById('team-name2').textContent = gameState.team2;
-        sendToGoogleSheets(gameState.team2, "NAN", "NAN", 0, "Team 2 Registered");
         console.log("✅ Team 2 Registered:", gameState.team2);
+        showSection('teamEmail2'); // Move to Team 2 Email Input
+    }
+}
+
+function handleTeamEmail(teamNumber) {
+    const teamEmailInput = document.getElementById(teamNumber === 1 ? 'team-email-input-1' : 'team-email-input-2');
+    const errorMessage = teamEmailInput.nextElementSibling;
+
+    if (!teamEmailInput.value.trim() || !validateEmail(teamEmailInput.value.trim())) {
+        errorMessage.classList.remove('hidden');
+        return;
+    }
+
+    errorMessage.classList.add('hidden');
+    const teamEmail = teamEmailInput.value.trim();
+
+    if (teamNumber === 1) {
+        gameState.team1Email = teamEmail;  // Store Team 1 Email
+        sendToGoogleSheets(gameState.team1, gameState.team1Email, "NAN", 0, "Team 1 Registered");
+        console.log("✅ Team 1 Email Registered:", gameState.team1Email);
+        showSection('teamname2'); // Move to Team 2 Name Input
+
+    } else if (teamNumber === 2) {
+        gameState.team2Email = teamEmail;  // Store Team 2 Email
+        sendToGoogleSheets(gameState.team2, gameState.team2Email, "NAN", 0, "Team 2 Registered");
+        console.log("✅ Team 2 Email Registered:", gameState.team2Email);
         showSection('welcome'); // Move to Welcome Screen
     }
 }
- 
+
+// Email validation function
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 
 
@@ -405,7 +462,7 @@ function startNextRound() {
 }
 
 function sendToGoogleSheets(teamName,topic, character, round, argument) {
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // Replace with your Apps Script Web App URL
+    const scriptURL = "url"; // Replace with your Apps Script Web App URL
 
     fetch(scriptURL, {
         method: "POST",
@@ -423,10 +480,10 @@ function sendToGoogleSheets(teamName,topic, character, round, argument) {
 }
 
 function retrieveDataFromGoogleSheets(expectedTeam) {
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // Replace with your Apps Script Web App URL
+    const scriptURL = "url"; // Replace with your Apps Script Web App URL
 
     let attempts = 0;
-    const maxAttempts = 15;
+    const maxAttempts = 20;
     
     function fetchData() {
         console.log("Checking for new data...");
@@ -452,7 +509,7 @@ function retrieveDataFromGoogleSheets(expectedTeam) {
                 } else if (attempts < maxAttempts) {
                     console.log("🔄 No match yet, retrying...");
                     attempts++;
-                    setTimeout(fetchData, 2000); // Retry after 2 seconds
+                    setTimeout(fetchData, 3000); // Retry after 2 seconds
                 } else {
                     console.warn("⏳ Timeout: No new data received within time limit.");
                 }
@@ -489,12 +546,18 @@ document.querySelector('.start-game').addEventListener('click', () => {
 });
 
 
-document.querySelector('.continue-btn[data-team="1"]').addEventListener('click', () => {
-    handleTeamName(1);
+document.querySelectorAll('.continue-btn').forEach(btn => {
+    btn.addEventListener('click', (event) => {
+        const teamNumber = parseInt(event.target.getAttribute('data-team'));
+        handleTeamName(teamNumber);
+    });
 });
 
-document.querySelector('.continue-btn[data-team="2"]').addEventListener('click', () => {
-    handleTeamName(2);
+document.querySelectorAll('.continue-email-btn').forEach(btn => {
+    btn.addEventListener('click', (event) => {
+        const teamNumber = parseInt(event.target.getAttribute('data-team'));
+        handleTeamEmail(teamNumber);
+    });
 });
 
 document.querySelectorAll('.back-btn').forEach(btn => {
