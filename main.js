@@ -356,7 +356,7 @@ async function submitDebate() {
 
     const results = document.getElementById('results');
     results.classList.remove('hidden');
-
+    document.querySelector('.submit-debate').classList.add('hidden');
     // Show assessing message until score is retrieved
     const assessingMessage = document.querySelector('.assessing-message');
     assessingMessage.classList.remove('hidden');
@@ -388,11 +388,11 @@ function displayResults(teamName, score) {
         onComplete: () => {
             if (!gameState.team1Submitted) {
                 gameState.team1Submitted = true;
-                document.querySelector('.submit-debate').classList.add('hidden');
+                
                 document.querySelector('.team2-turn').classList.remove('hidden'); // Show "Team 2's Turn"
             } else {
                 gameState.team2Submitted = true;
-                document.querySelector('.submit-debate').classList.add('hidden');
+                
                 document.querySelector('.next-round-btn').classList.remove('hidden'); // Show "Next Round"
             }
         }
@@ -439,7 +439,7 @@ function finish() {
 
 function startNextRound() {
     gameState.currentRound++;
-    if (gameState.currentRound > 2) {
+    if (gameState.currentRound > 1) {
         finish();
         return;
     }
@@ -459,7 +459,7 @@ function startNextRound() {
 }
 
 function sendToGoogleSheets(teamName,topic, character, round, argument) {
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // heloooooooooooooooooooooooooooooooooooooooooo
+    const scriptURL = "url"; // heloooooooooooooooooooooooooooooooooooooooooo
 
     fetch(scriptURL, {
         method: "POST",
@@ -477,7 +477,7 @@ function sendToGoogleSheets(teamName,topic, character, round, argument) {
 }
 
 function retrieveDataFromGoogleSheets(expectedTeam) {
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // heloooooooooooooooooooooooooooooooooooooooooo
+    const scriptURL = "url"; // heloooooooooooooooooooooooooooooooooooooooooo
 
     let attempts = 0;
     const maxAttempts = 20;
@@ -570,7 +570,9 @@ document.querySelector('.roll-die-btn').addEventListener('click', rollDie);
 document.querySelector('.start-debate-btn').addEventListener('click', startDebate);
 document.querySelector('.submit-debate').addEventListener('click', submitDebate);
 document.querySelector('.next-round-btn').addEventListener('click', startNextRound);
-document.querySelector('.new-game-btn').addEventListener('click', resetGame);
+document.querySelector('.new-game-btn').addEventListener('click', () => {
+    window.open("airtable url","_blank");//window.location.href = "url";
+});
 
 document.querySelector(".team2-turn").addEventListener("click", () => {
     document.querySelector(".team2-turn").classList.add("hidden");
