@@ -1,4 +1,4 @@
-// Debate topics and characters
+
 const debateTopics = [
     "If bananas became the president?",
     "What if clouds could talk?",
@@ -69,7 +69,7 @@ const debateCharacters = [
 ];
 
 
-// Current game state
+
 let gameState = {
     teamName: null,
     currentTopic: null,
@@ -85,7 +85,7 @@ let gameState = {
 
 
 
-// DOM Elements
+
 const sections = {
     landing: document.getElementById('landing-page'),
     teamName: document.getElementById('team-name'),
@@ -184,16 +184,16 @@ function handleTeamName(teamNumber) {
     const teamName = teamNameInput.value.trim();
 
     if (teamNumber === 1) {
-        gameState.team1 = teamName;  // Store Team 1
+        gameState.team1 = teamName;  
         document.getElementById('team-name1').textContent = gameState.team1;
         console.log("✅ Team 1 Registered:", gameState.team1);
-        showSection('teamEmail1'); // Move to Team 1 Email Input
+        showSection('teamEmail1'); 
 
     } else if (teamNumber === 2) {
-        gameState.team2 = teamName;  // Store Team 2
+        gameState.team2 = teamName;  
         document.getElementById('team-name2').textContent = gameState.team2;
         console.log("✅ Team 2 Registered:", gameState.team2);
-        showSection('teamEmail2'); // Move to Team 2 Email Input
+        showSection('teamEmail2'); 
     }
 }
 
@@ -210,16 +210,16 @@ function handleTeamEmail(teamNumber) {
     const teamEmail = teamEmailInput.value.trim();
 
     if (teamNumber === 1) {
-        gameState.team1Email = teamEmail;  // Store Team 1 Email
+        gameState.team1Email = teamEmail;  
         sendToGoogleSheets(gameState.team1, gameState.team1Email, "NAN", 0, "Team 1 Registered");
         console.log("✅ Team 1 Email Registered:", gameState.team1Email);
-        showSection('teamname2'); // Move to Team 2 Name Input
+        showSection('teamname2'); 
 
     } else if (teamNumber === 2) {
-        gameState.team2Email = teamEmail;  // Store Team 2 Email
+        gameState.team2Email = teamEmail;  
         sendToGoogleSheets(gameState.team2, gameState.team2Email, "NAN", 0, "Team 2 Registered");
         console.log("✅ Team 2 Email Registered:", gameState.team2Email);
-        showSection('welcome'); // Move to Welcome Screen
+        showSection('welcome');
     }
 }
 
@@ -280,7 +280,7 @@ function rollForDebate() {
 }
 
 
-// Start debate
+
 function startDebate() {
     showSection('debateRoom');
     document.getElementById('debate-topic').textContent = gameState.currentTopic;
@@ -288,7 +288,6 @@ function startDebate() {
     startCountdown();
 }
 
-// Countdown animation
 function startCountdown() {
     const overlay = document.querySelector('.countdown-overlay');
     const countdownNumber = document.querySelector('.countdown-number');
@@ -308,7 +307,7 @@ function startCountdown() {
     }, 1000);
 }
 
-// Timer functionality
+
 function startTimer() {
     const timerDisplay = document.getElementById('timer');
     
@@ -334,7 +333,7 @@ function startTimer() {
     }, 1000);
 }
 
-// Submit debate argument
+
 // Submit debate argument
 async function submitDebate() {
     const argument = document.getElementById('debate-input').value;
@@ -352,7 +351,7 @@ async function submitDebate() {
         return;
     }
     console.log("✅ Submitting for team:", currentTeam);
-    // Send data to Google Sheets
+   
     sendToGoogleSheets(currentTeam, gameState.currentTopic, gameState.currentCharacter.name, gameState.currentRound, argument);
 
     const results = document.getElementById('results');
@@ -364,7 +363,6 @@ async function submitDebate() {
     document.getElementById('your-score').textContent = "Assessing score...";
     console.log("Passing expectedTeam:", currentTeam);
 
-    // **Retrieve actual score from Google Sheets**
     setTimeout(() => retrieveDataFromGoogleSheets(currentTeam), 1000);
 }
 
@@ -438,7 +436,7 @@ function finish() {
     });
 }
 
-// Start next round
+
 function startNextRound() {
     gameState.currentRound++;
     if (gameState.currentRound > 2) {
@@ -448,7 +446,7 @@ function startNextRound() {
     gameState.team1Submitted = false;
     gameState.team2Submitted = false;
     
-    // Reset UI
+  
     document.getElementById('debate-input').value = '';
     document.getElementById('debate-input').disabled = false;
     document.getElementById('results').classList.add('hidden');
@@ -457,12 +455,11 @@ function startNextRound() {
     document.querySelector('.submit-debate').classList.remove('hidden');
     document.getElementById('current-round').textContent = gameState.currentRound;
     
-    // Start new countdown and timer
     startCountdown();
 }
 
 function sendToGoogleSheets(teamName,topic, character, round, argument) {
-    const scriptURL = "url"; // Replace with your Apps Script Web App URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // heloooooooooooooooooooooooooooooooooooooooooo
 
     fetch(scriptURL, {
         method: "POST",
@@ -480,14 +477,14 @@ function sendToGoogleSheets(teamName,topic, character, round, argument) {
 }
 
 function retrieveDataFromGoogleSheets(expectedTeam) {
-    const scriptURL = "url"; // Replace with your Apps Script Web App URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzLREI0AaC1iGn1f2UEldrgsb7SDPGo2eay3o9ewA7SPtOeZ12vt-5n8MEZGlgWWRWI/exec"; // heloooooooooooooooooooooooooooooooooooooooooo
 
     let attempts = 0;
     const maxAttempts = 20;
     
     function fetchData() {
         console.log("Checking for new data...");
-        console.log("Expected Team:", expectedTeam); // Ensure expectedTeam is being passed correctly
+        console.log("Expected Team:", expectedTeam); // Ensure expectedTeam  passed correctly
 
         fetch(scriptURL)
             .then(response => response.json())
@@ -509,7 +506,7 @@ function retrieveDataFromGoogleSheets(expectedTeam) {
                 } else if (attempts < maxAttempts) {
                     console.log("🔄 No match yet, retrying...");
                     attempts++;
-                    setTimeout(fetchData, 3000); // Retry after 2 seconds
+                    setTimeout(fetchData, 3000); 
                 } else {
                     console.warn("⏳ Timeout: No new data received within time limit.");
                 }
@@ -523,7 +520,7 @@ function retrieveDataFromGoogleSheets(expectedTeam) {
 
 
 
-// Reset game
+// Reset game - lakshmis airtable link integrate
 function resetGame() {
     gameState = {
         teamName: null,
@@ -540,7 +537,6 @@ function resetGame() {
     showSection('landing');
 }
 
-// Event Listeners
 document.querySelector('.start-game').addEventListener('click', () => {
     showSection('teamName');
 });
